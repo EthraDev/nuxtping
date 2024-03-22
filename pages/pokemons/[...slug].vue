@@ -5,7 +5,9 @@ const { findOne } = useStrapi4()
 const route = useRoute()
 
 const { data: pokemon, pending } = useAsyncData('pokemon', () =>
-    findOne<{ data: Pokemon[] }>(`pokemons/${route.params.slug}`)
+    findOne<{ data: Pokemon[] }>(`pokemons/${route.params.slug}`, {
+        populate: '*'
+    })
 )
 </script>
 

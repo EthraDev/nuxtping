@@ -9,8 +9,10 @@ const { find } = useStrapi()
 const $filters = ref<string[]>([])
 
 const addFilter = (filter: string) => {
+  console.log(filter)
     if (!filter.value) return
     $filters.value.push(filter.value)
+    console.log($filters.value)
     page.value = 1
 }
 
@@ -51,8 +53,10 @@ const { data, pending, error } = await useAsyncData('pokemons', async() => {
   }
 )
 
-const { data: types } = await useAsyncData('prout', async() => {
-    return await find<Type>('prout').then(res => res.data)
+const { data: types} = await useAsyncData('type', async() => {
+    return await find<Type>('types', {
+        populate: '*'
+    }).then(res => res.data)
 })
 
 </script>
@@ -62,8 +66,14 @@ const { data: types } = await useAsyncData('prout', async() => {
         <span>Loading...</span>
     </template>
     <template v-else>
+      <pre>{{types}}</pre>
       <div v-for="pokemon in data" :key="pokemon.slug">
         <a :href="`/pokemons/${pokemon.slug}`" :key="pokemon.id">{{ pokemon.name }}</a>
+      </div>
+      <div v-for="type in types" :key="type.id">
+        <button>
+          {{ type.name }}
+          </button>
       </div>
     <UPagination v-if="pokemons?.meta"
       v-model="page"
@@ -71,12 +81,10 @@ const { data: types } = await useAsyncData('prout', async() => {
       :total="pokemons?.meta.pagination.total"
     />
     </template>
-    <p>{{ data }}</p>
     <template>
-      <div v-for="prout in types" :key="prout.id">
-        <button>{{ prout.name }}</button>
-      </div>
+      
     </template>
+
 </template>
 
 <style scoped></style>
