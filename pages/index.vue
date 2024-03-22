@@ -10,10 +10,13 @@ const $filters = ref<string[]>([])
 
 const addFilter = (filter: string) => {
   console.log(filter)
-    if (!filter.value) return
-    $filters.value.push(filter.value)
+    if (!filter) return
+    if($filters.value.length != 0) $filters.value.pop()
+    $filters.value.push(filter)
     console.log($filters.value)
     page.value = 1
+
+    
 }
 
 const removeFilter = (filter: string) => {
@@ -64,17 +67,18 @@ const { data: types} = await useAsyncData('type', async() => {
 <template>
     <template v-if="pending">
         <span>Loading...</span>
-    </template>
+    </template> 
     <template v-else>
-      <pre>{{types}}</pre>
-      <div v-for="pokemon in data" :key="pokemon.slug">
-        <a :href="`/pokemons/${pokemon.slug}`" :key="pokemon.id">{{ pokemon.name }}</a>
-      </div>
       <div v-for="type in types" :key="type.id">
-        <button>
+        <button @click="addFilter(`${type.name}`)">
           {{ type.name }}
           </button>
       </div>
+      
+      <div v-for="pokemon in data" :key="pokemon.slug">
+        <a :href="`/pokemons/${pokemon.slug}`" :key="pokemon.id">{{ pokemon.name }}</a>
+      </div>
+      
     <UPagination v-if="pokemons?.meta"
       v-model="page"
       :page-count="pokemons?.meta.pagination.pageCount"
